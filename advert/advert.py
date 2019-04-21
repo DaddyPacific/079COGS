@@ -4,12 +4,10 @@ import time
 from redbot.core import commands, Config, checks, utils
 from typing import Optional
 
+
 class AdvertCog(commands.Cog):
 
-    default_guild = {
-            "advert_role_ID": None,
-            "alert_message": None
-        }
+    default_guild = {"advert_role_ID": None, "alert_message": None}
 
     def __init__(self, bot):
         self.bot = bot
@@ -19,10 +17,18 @@ class AdvertCog(commands.Cog):
     @commands.command(name="advert", aliases=["ad"])
     @commands.guild_only()
     @checks.mod_or_permissions(manage_roles=True)
-    async def advert(self, ctx, users : commands.Greedy[discord.Member], minutes : Optional[int] = 2, sendPM : bool = True):
+    async def advert(
+        self,
+        ctx,
+        users: commands.Greedy[discord.Member],
+        minutes: Optional[int] = 2,
+        sendPM: bool = True,
+    ):
         """Give a user temporary advertisment permission and access"""
         if not ctx.guild.me.guild_permissions.manage_roles:
-            return await ctx.send("I don't have `Manage Roles` perms. I thought we were friends ;c")
+            return await ctx.send(
+                "I don't have `Manage Roles` perms. I thought we were friends ;c"
+            )
 
         if not users:
             return await ctx.send_help()
@@ -30,7 +36,11 @@ class AdvertCog(commands.Cog):
         advert_role_ID = await self.config.guild(ctx.guild).advert_role_ID()
 
         if advert_role_ID is None:
-            return await ctx.send("Advert Role is not set. Use `{prefix}setadvert <role>` to enable.".format(prefix=ctx.prefix))
+            return await ctx.send(
+                "Advert Role is not set. Use `{prefix}setadvert <role>` to enable.".format(
+                    prefix=ctx.prefix
+                )
+            )
 
         advert_role = ctx.guild.get_role(advert_role_ID)
         server = ctx.guild.name
@@ -46,11 +56,13 @@ class AdvertCog(commands.Cog):
         seconds = minutes * 60
         await asyncio.sleep(seconds)
 
-        msg = f"```diff\n{minutes} minutes passed and Role {advert_role.name} has been revoked :\n\n"
+        msg = (
+            f"```diff\n{minutes} minutes passed and Role {advert_role.name} has been revoked :\n\n"
+        )
         for member in users:
             await member.remove_roles(advert_role)
             msg += f"- {member} - Role Revoked ({advert_role.name})\n"
-        msg += '```'
+        msg += "```"
         await message.edit(content=msg)
 
     async def alert_member(self, ctx, member, minutes):
@@ -59,12 +71,11 @@ class AdvertCog(commands.Cog):
         if alert_message is None:
             alert_message = "You have received access make an advertisement post in Server __**{server}**__!\n\nYou have __**{minutes}**__ minutes to make an advertisement."
         print(f"alerting member {member.name}\n{alert_message}")
-        await member.send(alert_message.format(
-                server=ctx.guild.name,
-                user=member.name,
-                admin=ctx.author,
-                minutes=minutes
-            ))
+        await member.send(
+            alert_message.format(
+                server=ctx.guild.name, user=member.name, admin=ctx.author, minutes=minutes
+            )
+        )
 
     @commands.group(name="setadvert")
     @commands.guild_only()
@@ -74,7 +85,7 @@ class AdvertCog(commands.Cog):
         pass
 
     @setadvert.command(name="role")
-    async def role(self, ctx, role : discord.Role = None):
+    async def role(self, ctx, role: discord.Role = None):
         """Set the advertisement role used to give advert perms"""
         advert_role_ID = await self.config.guild(ctx.guild).advert_role_ID()
         advert_role = ctx.guild.get_role(advert_role_ID)
@@ -84,11 +95,14 @@ class AdvertCog(commands.Cog):
         if role is not None:
             await self.config.guild(ctx.guild).advert_role_ID.set(role.id)
             if advert_role is not None:
-                return await ctx.send(f"```diff\n+ Updated {ctx.guild.name}'s Advert Role {role.name}\n\n- Replaced Role {advert_role.name}```")
+                return await ctx.send(
+                    f"```diff\n+ Updated {ctx.guild.name}'s Advert Role {role.name}\n\n- Replaced Role {advert_role.name}```"
+                )
             else:
-                return await ctx.send(f"```diff\n+ Updated {ctx.guild.name}'s Advert Role {role.name}```")
+                return await ctx.send(
+                    f"```diff\n+ Updated {ctx.guild.name}'s Advert Role {role.name}```"
+                )
 
-    
     @setadvert.command(name="alertmessage", alieses=["message"])
     async def alertmessage(self, ctx, *, message):
         alert_message = await self.config.guild(ctx.guild).alert_message()
