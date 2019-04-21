@@ -70,7 +70,6 @@ class AdvertCog(commands.Cog):
 
         if alert_message is None:
             alert_message = "You have received access make an advertisement post in Server __**{server}**__!\n\nYou have __**{minutes}**__ minutes to make an advertisement."
-        print(f"alerting member {member.name}\n{alert_message}")
         await member.send(
             alert_message.format(
                 server=ctx.guild.name, user=member.name, admin=ctx.author, minutes=minutes
