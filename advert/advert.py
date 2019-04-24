@@ -7,7 +7,11 @@ from typing import Optional
 
 class AdvertCog(commands.Cog):
 
-    default_guild = {"advert_role_ID": None, "start_alert_message": None, "end_alert_message": None}
+    default_guild = {
+        "advert_role_ID": None,
+        "start_alert_message": None,
+        "end_alert_message": None,
+    }
 
     def __init__(self, bot):
         self.bot = bot
@@ -48,7 +52,7 @@ class AdvertCog(commands.Cog):
         for member in users:
             await member.add_roles(advert_role)
             if sendPM:
-                await self.alert_member(ctx, member, minutes, start_message = True)
+                await self.alert_member(ctx, member, minutes, start_message=True)
             msg += f"+ {member} - Has Role {advert_role.name}\n"
         msg += "```"
         message = await ctx.send(msg)
@@ -62,12 +66,12 @@ class AdvertCog(commands.Cog):
         for member in users:
             await member.remove_roles(advert_role)
             if sendPM:
-                await self.alert_member(ctx, member, minutes, start_message = False)
+                await self.alert_member(ctx, member, minutes, start_message=False)
             msg += f"- {member} - Role Revoked ({advert_role.name})\n"
         msg += "```"
         await message.edit(content=msg)
 
-    async def alert_member(self, ctx, member, minutes, start_message : bool = True):
+    async def alert_member(self, ctx, member, minutes, start_message: bool = True):
         if start_message:
             alert_message = await self.config.guild(ctx.guild).start_alert_message()
 
@@ -75,11 +79,11 @@ class AdvertCog(commands.Cog):
                 alert_message = "You have received access make an advertisement post in Server __**{server}**__!\n\nYou have __**{minutes}**__ to make an advertisement."
             await member.send(
                 alert_message.format(
-                    server = ctx.guild.name,
-                    user = member.name,
-                    admin = ctx.author,
-                    minutes = (f"{minutes} minutes" if minutes > 1 else f"{minutes} minute")
-                    )
+                    server=ctx.guild.name,
+                    user=member.name,
+                    admin=ctx.author,
+                    minutes=(f"{minutes} minutes" if minutes > 1 else f"{minutes} minute"),
+                )
             )
         else:
             alert_message = await self.config.guild(ctx.guild).end_alert_message()
@@ -88,13 +92,12 @@ class AdvertCog(commands.Cog):
                 alert_message = "Your __**{minutes}**__ timer has ended to make an advertisement in Server __**{server}**__. Thank you **{user}**!"
             await member.send(
                 alert_message.format(
-                    server = ctx.guild.name,
-                    user = member.name,
-                    admin = ctx.author,
-                    minutes = (f"{minutes} minutes" if minutes > 1 else f"{minutes} minute")
-                    )
+                    server=ctx.guild.name,
+                    user=member.name,
+                    admin=ctx.author,
+                    minutes=(f"{minutes} minutes" if minutes > 1 else f"{minutes} minute"),
+                )
             )
-
 
     @commands.group(name="setadvert")
     @commands.guild_only()
